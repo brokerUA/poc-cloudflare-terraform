@@ -1,0 +1,24 @@
+[tools]
+# Pinned for stability and reproducible builds: Terraform 1.14.1 (Dec 2025)
+terraform = "1.14.1"
+
+# Pinned for stability and reproducible builds: Node.js 22.11.0 (Active LTS)
+node = "22.11.0"
+
+[tasks.fmt]
+run = "terraform fmt -recursive"
+
+[tasks.init]
+run = "terraform -chdir=examples/complete init"
+
+[tasks.validate]
+run = "terraform -chdir=examples/complete validate"
+
+[tasks.plan]
+run = "terraform -chdir=examples/complete plan"
+
+[tasks.apply]
+run = "terraform -chdir=examples/complete apply"
+
+[tasks.test]
+run = "terraform -chdir=modules/zone-baseline init -backend=false -upgrade && terraform -chdir=modules/zone-baseline test -verbose && terraform -chdir=modules/workers init -backend=false -upgrade && terraform -chdir=modules/workers test -verbose && terraform -chdir=modules/traffic-rules init -backend=false -upgrade && terraform -chdir=modules/traffic-rules test -verbose && terraform -chdir=modules/origin-ca init -backend=false -upgrade && terraform -chdir=modules/origin-ca test -verbose"
