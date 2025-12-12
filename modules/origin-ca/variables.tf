@@ -21,7 +21,7 @@ variable "requested_validity" {
 }
 
 variable "csr" {
-  description = "Optional PEM-encoded CSR. If omitted, Cloudflare will generate a private key and return it."
+  description = "Optional PEM-encoded CSR. If omitted, the module generates a private key and CSR internally and submits it to Cloudflare."
   type        = string
   default     = null
   sensitive   = true

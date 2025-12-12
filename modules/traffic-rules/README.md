@@ -1,6 +1,7 @@
 # traffic-rules module
 
 Create and manage Cloudflare Rulesets for a zone to handle:
+
 - Cache settings (phase `http_request_cache_settings`)
 - URL redirects (phase `http_request_dynamic_redirect`)
 - URL rewrites (phase `http_request_transform`)
@@ -8,6 +9,7 @@ Create and manage Cloudflare Rulesets for a zone to handle:
 The module only creates a ruleset for a phase when you provide at least one rule for that phase. Each ruleset is created at the zone level and named `default`.
 
 ## Prerequisites
+
 - Terraform `>= 1.5.0` and the Cloudflare provider `>= 5.0.0` (declared in `versions.tf`).
 - A Cloudflare API token with permission to manage rulesets for the target zone.
 - Your Cloudflare `zone_id`.
@@ -21,6 +23,7 @@ provider "cloudflare" {
 ```
 
 ## Inputs
+
 - `zone_id` (string, required)
   - Cloudflare Zone ID where the rulesets will be applied.
 
@@ -52,6 +55,7 @@ provider "cloudflare" {
     - `to` (string, required) — New path to rewrite to (sets `action_parameters.uri.path.value`).
 
 ## Outputs
+
 - `cache_ruleset_id`
   - ID of the cache ruleset (or `null` if not created).
 - `redirect_ruleset_id`
@@ -106,7 +110,10 @@ output "cache_ruleset_id" {
 ```
 
 ## Notes
+
 - Rulesets are only created when their corresponding input lists are non-empty.
 - All rulesets are created with `kind = "zone"` and name `default`.
 - Ensure your filter `expression` strings are valid Cloudflare expressions for the respective phase.
 - Some optional fields defined in inputs (like `cache_by_device` and `respect_strong_etag`) are present for future extension but are not currently applied by this module.
+
+<!-- EOF -->

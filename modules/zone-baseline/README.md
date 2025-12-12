@@ -1,12 +1,14 @@
 # zone-baseline module
 
 Apply baseline configuration for a Cloudflare zone:
+
 - Manage Zone Settings via `cloudflare_zone_setting` (supports mixed value types).
 - Create DNS records in the zone from a typed list.
 
 The module uses per-setting resources and a deterministic map for DNS records to ensure stable plans.
 
 ## Prerequisites
+
 - Terraform >= 1.5.0 and the Cloudflare provider >= 5.0.0 (declared in `versions.tf`).
 - A Cloudflare API token with permissions to manage Zone Settings and DNS for the target zone.
 - Your Cloudflare `zone_id`.
@@ -20,6 +22,7 @@ provider "cloudflare" {
 ```
 
 ## Inputs
+
 - `zone_id` (string, required)
   - Cloudflare Zone ID to manage.
 
@@ -40,6 +43,7 @@ provider "cloudflare" {
     - `tags` (list(string), optional)
 
 ## Outputs
+
 - `dns_record_ids`
   - Map of DNS record resource IDs keyed by a synthetic key (`<name>_<type>_<index>`).
 
@@ -90,6 +94,7 @@ output "dns_record_ids" {
 ```
 
 ## Notes
+
 - Zone settings are applied per key using `cloudflare_zone_setting` and support mixed types as required by the provider.
 - The `ssl_recommender` setting is applied via `enabled` and forces `value = "on"` as required by the Cloudflare provider.
 - DNS records default `ttl` to `1` (automatic) when not provided.
