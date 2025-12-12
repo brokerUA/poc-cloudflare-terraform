@@ -112,10 +112,10 @@ run "plan_no_rules_when_empty" {
   command = plan
 
   variables {
-    zone_id            = "0123456789abcdef0123456789abcdef"
-    cache_rules        = []
-    redirect_rules     = []
-    url_rewrite_rules  = []
+    zone_id           = "0123456789abcdef0123456789abcdef"
+    cache_rules       = []
+    redirect_rules    = []
+    url_rewrite_rules = []
   }
 
   assert {

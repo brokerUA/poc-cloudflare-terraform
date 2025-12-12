@@ -1,3 +1,4 @@
+# Zone Baseline Settings
 module "zone_baseline" {
   source  = "../../modules/zone-baseline"
   zone_id = var.zone_id
@@ -95,8 +96,7 @@ module "traffic_rules" {
 
 # Origin CA certificate for apex and wildcard hosts
 module "origin_ca" {
-  source     = "../../modules/origin-ca"
-  account_id = var.account_id
+  source = "../../modules/origin-ca"
 
   hostnames = [
     var.domain,

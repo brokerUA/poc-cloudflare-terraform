@@ -13,10 +13,10 @@ resource "cloudflare_ruleset" "cache" {
 
   rules = [
     for rules in var.cache_rules : {
-      description      = rules.description
-      expression       = rules.expression
-      enabled          = try(rules.enabled, true)
-      action           = "set_cache_settings"
+      description = rules.description
+      expression  = rules.expression
+      enabled     = try(rules.enabled, true)
+      action      = "set_cache_settings"
       action_parameters = {
         edge_ttl = try(
           rules.cache.ttl != null ? {
@@ -45,8 +45,8 @@ resource "cloudflare_ruleset" "redirect" {
       action      = "redirect"
       action_parameters = {
         from_value = {
-          status_code           = try(rules.status_code, 301)
-          target_url            = {
+          status_code = try(rules.status_code, 301)
+          target_url = {
             value = rules.destination
           }
           preserve_query_string = try(rules.preserve_query_string, true)

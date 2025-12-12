@@ -4,8 +4,7 @@ run "plan_default_ecc" {
   command = plan
 
   variables {
-    account_id = "acc_123"
-    hostnames  = ["example.com", "*.example.com"]
+    hostnames = ["example.com", "*.example.com"]
     // Provider v5 requires a CSR to be provided explicitly.
     // Use a minimal dummy CSR while still validating defaults.
     csr = <<-EOT
@@ -41,9 +40,8 @@ run "plan_with_csr_and_rsa" {
   command = plan
 
   variables {
-    account_id         = "acc_456"
-    hostnames          = ["api.example.com"]
-    request_type       = "origin-rsa"
+    hostnames    = ["api.example.com"]
+    request_type = "origin-rsa"
     // Provider allows only specific validity values; choose 365 (1 year)
     requested_validity = 365
     csr                = <<-EOT
