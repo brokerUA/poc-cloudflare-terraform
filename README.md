@@ -5,6 +5,7 @@ This repository is a Proof of Concept (POC) for managing Cloudflare configuratio
 The repo is optimized for reproducible local workflows and module‑level testing using Terraform's native test framework.
 
 ## Features
+
 - Modular `modules/*`:
   - `zone-baseline`: baseline zone settings (e.g., Image Resizing and other zone settings via provider v5 resources)
   - `workers`: deploy a Cloudflare Worker script and optionally attach HTTP routes
@@ -15,27 +16,32 @@ The repo is optimized for reproducible local workflows and module‑level testin
 - Terraform native tests (`.tftest.hcl`) per module that validate plans without calling Cloudflare APIs.
 
 ## Stack and Tooling
+
 - IaC: Terraform (language: HCL)
 - Provider: Cloudflare provider v5 (pinned per module in `versions.tf`)
 - Tool/version manager: `mise` (recommended)
 - Optional runtime for Worker script authoring: Node.js (only needed if you develop Worker scripts; not required for planning/tests)
 
 Pinned versions (see `mise.toml`):
-- `terraform = 1.14.1`
-- `node = 22.11.0` (optional)
+
+- `terraform = 1.14.2`
+- `node = 24.12.0` (optional)
 
 ## Requirements
-- Terraform >= 1.5.0 (project develops and tests with 1.14.1 via `mise`)
+
+- Terraform >= 1.5.0 (project develops and tests with 1.14.2 via `mise`)
 - Cloudflare provider >= 5.0.0 (resolved during `terraform init` in each module)
 - To apply the example against a real Cloudflare account you need a Cloudflare API token with appropriate permissions.
 
 Environment variables when applying (not needed for tests):
-- `CLOUDFLARE_API_TOKEN` — API token used by the provider in `examples/complete/provider.tf`.
+
+- Prefer exporting `TF_VAR_cloudflare_api_token` so Terraform receives the token as a variable (the provider reads `var.cloudflare_api_token`). You may also set `CLOUDFLARE_API_TOKEN` and map it: `export TF_VAR_cloudflare_api_token="$CLOUDFLARE_API_TOKEN"`.
 
 ## Getting Started
 
 ### Option A: Using mise (recommended)
-1. Install `mise` (https://mise.jdx.dev/) and run in a shell where `mise` activates the pinned tools.
+
+1. Install [mise](https://mise.jdx.dev/) and run in a shell where `mise` activates the pinned tools.
 2. Format all Terraform code:
    - `mise run fmt`
 3. Initialize the example composition (no backend configured):
@@ -47,7 +53,8 @@ Environment variables when applying (not needed for tests):
    - `mise run apply`
 
 ### Option B: Without mise
-Ensure Terraform >= 1.5.0 (1.14.1 preferred) is on PATH.
+
+Ensure Terraform >= 1.5.0 (1.14.2 preferred) is on PATH.
 
 - Format:
   - `terraform fmt -recursive`
@@ -59,7 +66,9 @@ Ensure Terraform >= 1.5.0 (1.14.1 preferred) is on PATH.
   - `terraform -chdir=examples/complete apply`
 
 ## Scripts and Tasks
+
 Defined in `mise.toml`:
+
 - `fmt` — `terraform fmt -recursive`
 - `init` — `terraform -chdir=examples/complete init`
 - `validate` — `terraform -chdir=examples/complete validate`
@@ -68,17 +77,18 @@ Defined in `mise.toml`:
 - `test` — runs init+test for each module sequentially using Terraform native tests
 
 ## Testing
+
 This repo uses Terraform native tests (no external harness). Tests operate at plan time and do not call Cloudflare APIs.
 
 Run all module tests:
 
-```
+```bash
 mise run test
 ```
 
 Under the hood it executes (abbreviated):
 
-```
+```bash
 terraform -chdir=modules/zone-baseline init -backend=false -upgrade && terraform -chdir=modules/zone-baseline test -verbose && \
 terraform -chdir=modules/workers init -backend=false -upgrade && terraform -chdir=modules/workers test -verbose && \
 terraform -chdir=modules/traffic-rules init -backend=false -upgrade && terraform -chdir=modules/traffic-rules test -verbose && \
@@ -87,12 +97,13 @@ terraform -chdir=modules/origin-ca init -backend=false -upgrade && terraform -ch
 
 Run tests for a single module:
 
-```
+```bash
 terraform -chdir=modules/<module> init -backend=false -upgrade
 terraform -chdir=modules/<module> test -verbose
 ```
 
 Notes specific to the Cloudflare provider v5 used here:
+
 - Some resources are not destroyable by Terraform once created; tests rely on plan‑only behavior and teardown of test state, not real API deletes.
 - Workers routing in v5 uses `script = <script_name>` on `cloudflare_workers_route`.
 
@@ -107,11 +118,11 @@ Notes specific to the Cloudflare provider v5 used here:
 
 There are three common ways to pass these variables:
 
-1) Using a `terraform.tfvars` file (recommended for local runs)
+1. Using a `terraform.tfvars` file (recommended for local runs)
 
 Place a file at `examples/complete/terraform.tfvars`:
 
-```
+```hcl
 cloudflare_api_token = "<YOUR_API_TOKEN>"
 account_id           = "<YOUR_ACCOUNT_ID>"
 zone_id              = "<YOUR_ZONE_ID>"
@@ -125,17 +136,17 @@ domain               = "example.com"
     - `terraform -chdir=examples/complete validate`
     - `terraform -chdir=examples/complete plan`
 
-2) Using an explicit var‑file
+1. Using an explicit var‑file
 
-```
+```bash
 terraform -chdir=examples/complete plan -var-file=terraform.tfvars
 ```
 
-3) Using environment variables via the `TF_VAR_` convention
+1. Using environment variables via the `TF_VAR_` convention
 
 Export variables in your shell (only for the current process/session):
 
-```
+```bash
 export TF_VAR_cloudflare_api_token="<YOUR_API_TOKEN>"
 export TF_VAR_account_id="<YOUR_ACCOUNT_ID>"
 export TF_VAR_zone_id="<YOUR_ZONE_ID>"
@@ -145,12 +156,13 @@ terraform -chdir=examples/complete plan
 ```
 
 Notes:
+
 - The example’s provider block uses `api_token = var.cloudflare_api_token` (see `examples/complete/provider.tf`), so the token must be provided as a Terraform variable (e.g., via `terraform.tfvars` or `TF_VAR_cloudflare_api_token`). Setting `CLOUDFLARE_API_TOKEN` alone is not sufficient unless you map it to the variable (e.g., `export TF_VAR_cloudflare_api_token="$CLOUDFLARE_API_TOKEN"`).
 - Do not commit real tokens to version control. Prefer using a local, untracked `terraform.tfvars` or environment variables for secrets.
 
 ## Project Structure
 
-```
+```text
 modules/
   origin-ca/        # Origin CA certificate management module
   traffic-rules/    # Ruleset Engine traffic rules module
@@ -161,10 +173,12 @@ mise.toml           # Pinned tools and local task shortcuts
 ```
 
 Additional notable files:
+
 - `examples/complete/worker-scripts/*.js` — sample Worker scripts used by the example composition.
 - Each module includes `versions.tf`, `variables.tf`, `main.tf`, `outputs.tf`, and `tests/*.tftest.hcl`.
 
 ## Modules Overview
+
 - `modules/zone-baseline`
   - Baseline Cloudflare zone settings using provider v5 resources (with `for_each` across settings where applicable).
 - `modules/workers`
@@ -175,15 +189,21 @@ Additional notable files:
   - Manages Origin CA certificates; provider requires a CSR when creating; tests assert defaults like `request_type` and `requested_validity`.
 
 ## Environment Variables
-- `CLOUDFLARE_API_TOKEN` — required to run `apply` in the example composition. Not needed for module tests which are plan‑only.
+
+- `TF_VAR_cloudflare_api_token` — preferred way to pass the Cloudflare API token to the example composition (maps to `var.cloudflare_api_token`).
+- `CLOUDFLARE_API_TOKEN` — optional convenience variable; if you set it, also export `TF_VAR_cloudflare_api_token="$CLOUDFLARE_API_TOKEN"` so Terraform receives it as a variable.
+- Not needed for module tests which are plan‑only.
 
 ## Example Usage
-See `examples/complete` for a working composition. Provider configuration is in `examples/complete/provider.tf` and expects `CLOUDFLARE_API_TOKEN` in the environment.
+
+See `examples/complete` for a working composition. Provider configuration is in `examples/complete/provider.tf` and expects the API token via the Terraform variable `cloudflare_api_token` (e.g., from `terraform.tfvars` or `TF_VAR_cloudflare_api_token`).
 
 Workers scripts referenced by the example live under `examples/complete/worker-scripts/`. When composing modules, pass script content via variables (e.g., `file("...")`).
 
 ## Development
+
 Typical workflow:
+
 1. `mise run fmt`
 2. Edit module code in `modules/<module>`
 3. Add/update `modules/<module>/tests/*.tftest.hcl` with plan‑time assertions
@@ -192,14 +212,16 @@ Typical workflow:
 6. If modifying example composition, `mise run validate` and `mise run plan`
 
 Version constraints:
+
 - Root/example targets Terraform 1.14 syntax/features. Keep module `required_version` at `>= 1.5.0`, or bump consistently across modules if adopting newer language features.
 
 ## TODOs
+
 - CI: Set up automated `terraform fmt`, `validate`, and module `test` in CI.
 - Publishing: If these modules will be shared, add Terraform Registry metadata and examples as needed.
-- Contribution Guide: Add `CONTRIBUTING.md` with code style and review process.
 
 ## License
+
 MIT License — see [LICENSE](./LICENSE).
 
 ---

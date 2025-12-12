@@ -5,18 +5,6 @@ run "plan_default_ecc" {
 
   variables {
     hostnames = ["example.com", "*.example.com"]
-    // Provider v5 requires a CSR to be provided explicitly.
-    // Use a minimal dummy CSR while still validating defaults.
-    csr = <<-EOT
------BEGIN CERTIFICATE REQUEST-----
-MIIBWTCB/AAwEjEQMA4GA1UEAwwHZGVmYXVs dAIBADAeFw0yNTAxMDEwMDAwMDBa
-Fw0yNjAxMDEwMDAwMDBaMBIxEDAOBgNVBAMMB2V4YW1wbGUwWTATBgcqhkjOPQIB
-BggqhkjOPQMBBwNCAAQ8h0e9d2Xr1y8m6uZgZ7kE1Yg3O2mJ0Kc4xw8CwqM6z8o0
-f7e1gkq0zJqZ0j6X3zVJtH2c2t3zF8YxU0Z8o7hpoAAwCgYIKoZIzj0EAwIDSQAw
-RgIhAO3yqYlP9c3c8Pzq8ZKk3B+f9sQy1hQ1QJv7b8uJQP8NAiEApXoKp2yq5w2v
-z+4h5v4YkqM6JmYQ7rVbX2i4m8i5J3I=
------END CERTIFICATE REQUEST-----
-EOT
     // defaults: request_type = "origin-ecc", requested_validity = 5475
   }
 
@@ -33,6 +21,22 @@ EOT
   assert {
     condition     = resource.cloudflare_origin_ca_certificate.this.requested_validity == 5475
     error_message = "requested_validity default should be 5475 days"
+  }
+
+  assert {
+    condition     = output.generated == true
+    error_message = "module should generate CSR when none is provided"
+  }
+
+  // Ensure TLS resources are planned and wired
+  assert {
+    condition     = resource.tls_private_key.ecc[0].algorithm == "ECDSA"
+    error_message = "ECC private key should be generated when request_type is origin-ecc"
+  }
+
+  assert {
+    condition     = resource.tls_cert_request.generated[0].dns_names[0] == "example.com" && resource.tls_cert_request.generated[0].dns_names[1] == "*.example.com"
+    error_message = "Generated CSR should include provided hostnames"
   }
 }
 
@@ -62,12 +66,12 @@ EOT
   }
 
   assert {
-    condition     = resource.cloudflare_origin_ca_certificate.this.csr != null
-    error_message = "csr must be forwarded to the resource when provided"
+    condition     = resource.cloudflare_origin_ca_certificate.this.requested_validity == 365
+    error_message = "requested_validity should reflect provided value"
   }
 
   assert {
-    condition     = resource.cloudflare_origin_ca_certificate.this.requested_validity == 365
-    error_message = "requested_validity should reflect provided value"
+    condition     = output.generated == false
+    error_message = "module should not generate CSR when input csr is provided"
   }
 }

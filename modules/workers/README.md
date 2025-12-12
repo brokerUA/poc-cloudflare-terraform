@@ -3,11 +3,13 @@
 Deploy a Cloudflare Worker script and optionally attach it to one or more HTTP routes in a zone.
 
 The module:
+
 - Creates a Worker script in the specified Cloudflare account.
 - Optionally creates one or more Worker routes in the specified zone and binds them to the script.
 - Supports binding plaintext environment variables to the script.
 
 ## Prerequisites
+
 - Terraform >= 1.5.0 and the Cloudflare provider >= 5.0.0 (declared in `versions.tf`).
 - A Cloudflare API token with permissions to manage Workers and Routes for the target account and zone.
   - Required scopes typically include access to Workers Scripts and Routes.
@@ -22,6 +24,7 @@ provider "cloudflare" {
 ```
 
 ## Inputs
+
 - `account_id` (string, required)
   - Cloudflare Account ID where the Worker script will be deployed.
 
@@ -50,6 +53,7 @@ provider "cloudflare" {
   - Single route pattern to attach the Worker. Prefer `route_patterns`.
 
 ## Outputs
+
 - `worker_script_name`
   - Name of the deployed Worker script.
 
@@ -95,6 +99,7 @@ output "worker_script_name" {
 ```
 
 ## Notes
+
 - Routes are created only when `create_route` is `true` and at least one effective pattern is provided via `route_patterns` (preferred) or the deprecated `route_pattern`.
 - The module uses Cloudflare provider v5 resources `cloudflare_workers_script` and `cloudflare_workers_route`.
 - Only plaintext variable bindings are supported here; for secrets or KV bindings, extend the module accordingly.
