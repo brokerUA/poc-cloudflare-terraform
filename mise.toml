@@ -1,9 +1,9 @@
 [tools]
-# Pinned for stability and reproducible builds: Terraform 1.14.1 (Dec 2025)
-terraform = "1.14.1"
+# Pinned for stability and reproducible builds: Terraform 1.14.2 (Dec 2025)
+terraform = "1.14.2"
 
-# Pinned for stability and reproducible builds: Node.js 22.11.0 (Active LTS)
-node = "22.11.0"
+# Pinned for stability and reproducible builds: Node.js 24.12.0 (Active LTS)
+node = "24.12.0"
 
 [tasks.fmt]
 run = "terraform fmt -recursive"

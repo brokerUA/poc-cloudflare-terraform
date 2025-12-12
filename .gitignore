@@ -7,6 +7,9 @@
 # Local .terraform directories
 .terraform/
 
+# Generated terraform.lock.hcl files for modules
+/modules/*/.terraform.lock.hcl
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

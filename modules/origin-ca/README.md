@@ -6,7 +6,6 @@ Issue Cloudflare Origin CA certificates for one or more hostnames (for example, 
 - Terraform `>= 1.5.0` and the Cloudflare provider `>= 5.0.0` (the module declares these in `versions.tf`).
 - A Cloudflare API token with Account scope permissions to issue Origin CA certificates.
   - At minimum, the token should allow creating Origin CA certificates in the target account.
-- Your Cloudflare `account_id`.
 - Optional but recommended: install the Cloudflare Origin CA root certificate on your origin server so that your origin trusts the certificate chain presented by Cloudflare.
 
 Example provider configuration:
@@ -18,8 +17,6 @@ provider "cloudflare" {
 ```
 
 ## Inputs
-- `account_id` (string, required)
-  - Cloudflare Account ID.
 - `hostnames` (list(string), required)
   - Hostnames to include in the certificate (e.g., `["example.com", "*.example.com"]`).
 - `request_type` (string, optional, default: `"origin-ecc"`)
@@ -54,7 +51,6 @@ provider "cloudflare" {
 
 module "origin_ca" {
   source             = "../origin-ca"
-  account_id         = "<ACCOUNT_ID>"
   hostnames          = ["example.com", "*.example.com"]
   # request_type     = "origin-ecc"   # optional
   # requested_validity = 5475          # optional

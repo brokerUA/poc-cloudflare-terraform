@@ -1,8 +1,3 @@
-variable "account_id" {
-  description = "Cloudflare Account ID."
-  type        = string
-}
-
 variable "hostnames" {
   description = "List of hostnames to be included in the Origin CA certificate (e.g., example.com, *.example.com)."
   type        = list(string)
